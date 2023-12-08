@@ -6,7 +6,7 @@ package dan200.computercraft.api.client;
 
 import dan200.computercraft.api.client.turtle.TurtleUpgradeModeller;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
-import dan200.computercraft.api.turtle.TurtleUpgradeSerialiser;
+import dan200.computercraft.api.upgrades.UpgradeSerialiser;
 import dan200.computercraft.impl.client.ComputerCraftAPIClientService;
 
 /**
@@ -28,7 +28,7 @@ public final class ComputerCraftAPIClient {
      * @param modeller   The upgrade modeller.
      * @param <T>        The type of the turtle upgrade.
      */
-    public static <T extends ITurtleUpgrade> void registerTurtleUpgradeModeller(TurtleUpgradeSerialiser<T> serialiser, TurtleUpgradeModeller<T> modeller) {
+    public static <T extends ITurtleUpgrade> void registerTurtleUpgradeModeller(UpgradeSerialiser<T> serialiser, TurtleUpgradeModeller<T> modeller) {
         getInstance().registerTurtleUpgradeModeller(serialiser, modeller);
     }
 

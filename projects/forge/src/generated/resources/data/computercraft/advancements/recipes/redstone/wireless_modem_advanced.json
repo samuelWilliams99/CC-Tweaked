@@ -14,7 +14,6 @@
       "trigger": "minecraft:inventory_changed"
     }
   },
-  "requirements": [["has_computer", "has_wireless", "has_the_recipe"]],
-  "rewards": {"recipes": ["computercraft:wireless_modem_advanced"]},
-  "sends_telemetry_event": false
+  "requirements": [["has_the_recipe", "has_computer", "has_wireless"]],
+  "rewards": {"recipes": ["computercraft:wireless_modem_advanced"]}
 }

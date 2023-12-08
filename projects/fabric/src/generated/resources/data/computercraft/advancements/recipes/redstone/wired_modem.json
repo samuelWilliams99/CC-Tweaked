@@ -14,7 +14,6 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "requirements": [["has_computer", "has_cable", "has_the_recipe"]],
-  "rewards": {"recipes": ["computercraft:wired_modem"]},
-  "sends_telemetry_event": false
+  "requirements": [["has_the_recipe", "has_computer", "has_cable"]],
+  "rewards": {"recipes": ["computercraft:wired_modem"]}
 }

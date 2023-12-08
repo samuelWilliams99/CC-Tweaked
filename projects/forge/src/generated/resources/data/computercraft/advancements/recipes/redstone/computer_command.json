@@ -10,7 +10,6 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "requirements": [["has_components", "has_the_recipe"]],
-  "rewards": {"recipes": ["computercraft:computer_command"]},
-  "sends_telemetry_event": false
+  "requirements": [["has_the_recipe", "has_components"]],
+  "rewards": {"recipes": ["computercraft:computer_command"]}
 }

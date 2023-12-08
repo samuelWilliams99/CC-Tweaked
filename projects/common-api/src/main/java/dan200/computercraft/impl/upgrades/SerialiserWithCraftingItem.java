@@ -23,10 +23,10 @@ import java.util.function.BiFunction;
  * @param <T> The upgrade that this class can serialise and deserialise.
  */
 @ApiStatus.Internal
-public abstract class SerialiserWithCraftingItem<T extends UpgradeBase> implements UpgradeSerialiser<T> {
+public class SerialiserWithCraftingItem<T extends UpgradeBase> implements UpgradeSerialiser<T> {
     private final BiFunction<ResourceLocation, ItemStack, T> factory;
 
-    protected SerialiserWithCraftingItem(BiFunction<ResourceLocation, ItemStack, T> factory) {
+    public SerialiserWithCraftingItem(BiFunction<ResourceLocation, ItemStack, T> factory) {
         this.factory = factory;
     }
 

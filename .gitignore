@@ -5,6 +5,7 @@
 # Build directories
 /classes
 /logs
+projects/fabric/fabricloader.log
 /build
 /projects/*/logs
 /projects/*/build

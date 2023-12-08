@@ -4,6 +4,5 @@
   "group": "computercraft:turtle_advanced",
   "key": {"#": {"item": "computercraft:speaker"}, "T": {"item": "computercraft:turtle_advanced"}},
   "pattern": ["#T"],
-  "result": {"item": "computercraft:turtle_advanced", "nbt": "{RightUpgrade:\"computercraft:speaker\"}"},
-  "show_notification": true
+  "result": {"item": "computercraft:turtle_advanced", "nbt": "{RightUpgrade:\"computercraft:speaker\"}"}
 }

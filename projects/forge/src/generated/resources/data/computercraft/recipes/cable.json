@@ -3,6 +3,5 @@
   "category": "redstone",
   "key": {"#": {"tag": "forge:stone"}, "R": {"tag": "forge:dusts/redstone"}},
   "pattern": [" # ", "#R#", " # "],
-  "result": {"count": 6, "item": "computercraft:cable"},
-  "show_notification": true
+  "result": {"count": 6, "item": "computercraft:cable"}
 }

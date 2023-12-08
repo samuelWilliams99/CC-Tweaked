@@ -7,6 +7,5 @@
     "R": {"item": "minecraft:command_block"}
   },
   "pattern": ["###", "#R#", "#G#"],
-  "result": {"item": "computercraft:computer_command"},
-  "show_notification": true
+  "result": {"item": "computercraft:computer_command"}
 }

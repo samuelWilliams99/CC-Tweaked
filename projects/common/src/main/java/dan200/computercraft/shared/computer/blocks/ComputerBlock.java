@@ -4,11 +4,15 @@
 
 package dan200.computercraft.shared.computer.blocks;
 
+import com.mojang.serialization.MapCodec;
+import com.mojang.serialization.codecs.RecordCodecBuilder;
 import dan200.computercraft.shared.computer.core.ComputerFamily;
 import dan200.computercraft.shared.computer.core.ComputerState;
 import dan200.computercraft.shared.computer.items.ComputerItemFactory;
 import dan200.computercraft.shared.platform.RegistryEntry;
+import dan200.computercraft.shared.util.BlockCodecs;
 import net.minecraft.core.Direction;
+import net.minecraft.util.StringRepresentable;
 import net.minecraft.world.item.ItemStack;
 import net.minecraft.world.item.context.BlockPlaceContext;
 import net.minecraft.world.level.block.Block;
@@ -22,6 +26,12 @@ import net.minecraft.world.level.block.state.properties.EnumProperty;
 import javax.annotation.Nullable;
 
 public class ComputerBlock<T extends ComputerBlockEntity> extends AbstractComputerBlock<T> {
+    private static final MapCodec<ComputerBlock<?>> CODEC = RecordCodecBuilder.mapCodec(instance -> instance.group(
+        BlockCodecs.propertiesCodec(),
+        StringRepresentable.fromEnum(ComputerFamily::values).fieldOf("family").forGetter(AbstractComputerBlock::getFamily),
+        BlockCodecs.blockEntityCodec(x -> x.type)
+    ).apply(instance, ComputerBlock::new));
+
     public static final EnumProperty<ComputerState> STATE = EnumProperty.create("state", ComputerState.class);
     public static final DirectionProperty FACING = BlockStateProperties.HORIZONTAL_FACING;
 
@@ -36,6 +46,11 @@ public class ComputerBlock<T extends ComputerBlockEntity> extends AbstractComput
     @Override
     protected void createBlockStateDefinition(StateDefinition.Builder<Block, BlockState> builder) {
         builder.add(FACING, STATE);
+    }
+
+    @Override
+    protected MapCodec<? extends ComputerBlock<?>> codec() {
+        return CODEC;
     }
 
     @Nullable

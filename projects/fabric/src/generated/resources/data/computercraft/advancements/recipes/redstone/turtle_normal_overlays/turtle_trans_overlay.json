@@ -11,7 +11,6 @@
       "trigger": "minecraft:inventory_changed"
     }
   },
-  "requirements": [["has_turtle", "has_dye", "has_the_recipe"]],
-  "rewards": {"recipes": ["computercraft:turtle_normal_overlays/turtle_trans_overlay"]},
-  "sends_telemetry_event": false
+  "requirements": [["has_the_recipe", "has_turtle", "has_dye"]],
+  "rewards": {"recipes": ["computercraft:turtle_normal_overlays/turtle_trans_overlay"]}
 }

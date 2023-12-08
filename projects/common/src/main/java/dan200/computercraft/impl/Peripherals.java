@@ -9,7 +9,7 @@ import dan200.computercraft.shared.peripheral.generic.ComponentLookup;
 import dan200.computercraft.shared.peripheral.generic.GenericPeripheralProvider;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
-import net.minecraft.world.level.Level;
+import net.minecraft.server.level.ServerLevel;
 import net.minecraft.world.level.block.entity.BlockEntity;
 
 import javax.annotation.Nullable;
@@ -20,16 +20,16 @@ import javax.annotation.Nullable;
  * This lives in the {@code impl} package despite it not being part of the public API, in order to mirror Forge's class.
  */
 public final class Peripherals {
-    private static final GenericPeripheralProvider<Runnable> genericProvider = new GenericPeripheralProvider<>();
+    private static final GenericPeripheralProvider genericProvider = new GenericPeripheralProvider();
 
     private Peripherals() {
     }
 
-    public static void addGenericLookup(ComponentLookup<? super Runnable> lookup) {
+    public static void addGenericLookup(ComponentLookup lookup) {
         genericProvider.registerLookup(lookup);
     }
 
-    public static @Nullable IPeripheral getGenericPeripheral(Level level, BlockPos pos, Direction side, @Nullable BlockEntity blockEntity, Runnable invalidate) {
-        return genericProvider.getPeripheral(level, pos, side, blockEntity, invalidate);
+    public static @Nullable IPeripheral getGenericPeripheral(ServerLevel level, BlockPos pos, Direction side, @Nullable BlockEntity blockEntity) {
+        return genericProvider.getPeripheral(level, pos, side, blockEntity);
     }
 }

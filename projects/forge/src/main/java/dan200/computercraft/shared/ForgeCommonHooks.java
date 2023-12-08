@@ -5,39 +5,27 @@
 package dan200.computercraft.shared;
 
 import dan200.computercraft.api.ComputerCraftAPI;
+import dan200.computercraft.api.network.wired.WiredElementCapability;
+import dan200.computercraft.api.peripheral.PeripheralCapability;
 import dan200.computercraft.shared.command.CommandComputerCraft;
-import dan200.computercraft.shared.computer.blocks.ComputerBlockEntity;
 import dan200.computercraft.shared.config.Config;
 import dan200.computercraft.shared.network.client.UpgradesLoadedMessage;
 import dan200.computercraft.shared.peripheral.commandblock.CommandBlockPeripheral;
-import dan200.computercraft.shared.peripheral.diskdrive.DiskDriveBlockEntity;
 import dan200.computercraft.shared.peripheral.modem.wired.CableBlockEntity;
 import dan200.computercraft.shared.peripheral.modem.wired.WiredModemFullBlockEntity;
 import dan200.computercraft.shared.peripheral.modem.wireless.WirelessModemBlockEntity;
-import dan200.computercraft.shared.peripheral.monitor.MonitorBlockEntity;
-import dan200.computercraft.shared.peripheral.printer.PrinterBlockEntity;
-import dan200.computercraft.shared.peripheral.speaker.SpeakerBlockEntity;
 import dan200.computercraft.shared.platform.PlatformHelper;
-import dan200.computercraft.shared.turtle.blocks.TurtleBlockEntity;
-import dan200.computercraft.shared.util.CapabilityProvider;
-import dan200.computercraft.shared.util.SidedCapabilityProvider;
-import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraft.world.level.block.entity.CommandBlockEntity;
-import net.minecraftforge.event.*;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.living.LivingDropsEvent;
-import net.minecraftforge.event.level.ChunkWatchEvent;
-import net.minecraftforge.event.server.ServerStartingEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.eventbus.api.EventPriority;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.items.wrapper.InvWrapper;
-import net.minecraftforge.items.wrapper.SidedInvWrapper;
-
-import static dan200.computercraft.shared.Capabilities.CAPABILITY_PERIPHERAL;
-import static net.minecraftforge.common.capabilities.ForgeCapabilities.ITEM_HANDLER;
+import net.minecraft.world.level.block.entity.BlockEntityType;
+import net.neoforged.bus.api.EventPriority;
+import net.neoforged.bus.api.SubscribeEvent;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.neoforge.capabilities.RegisterCapabilitiesEvent;
+import net.neoforged.neoforge.event.*;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.living.LivingDropsEvent;
+import net.neoforged.neoforge.event.level.ChunkWatchEvent;
+import net.neoforged.neoforge.event.server.ServerStartingEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 
 /**
  * Forge-specific dispatch for {@link CommonHooks}.
@@ -68,7 +56,7 @@ public class ForgeCommonHooks {
     }
 
     @SubscribeEvent
-    public static void onChunkWatch(ChunkWatchEvent.Watch event) {
+    public static void onChunkWatch(ChunkWatchEvent.Sent event) {
         CommonHooks.onChunkWatch(event.getChunk(), event.getPlayer());
     }
 
@@ -87,55 +75,38 @@ public class ForgeCommonHooks {
         }
     }
 
-    private static final ResourceLocation PERIPHERAL = new ResourceLocation(ComputerCraftAPI.MOD_ID, "peripheral");
-    private static final ResourceLocation WIRED_ELEMENT = new ResourceLocation(ComputerCraftAPI.MOD_ID, "wired_node");
-    private static final ResourceLocation INVENTORY = new ResourceLocation(ComputerCraftAPI.MOD_ID, "inventory");
-
     /**
      * Attach capabilities to our block entities.
      *
-     * @param event The {@link AttachCapabilitiesEvent} event.
+     * @param event The event to register capabilities with.
      */
     @SubscribeEvent
-    public static void onCapability(AttachCapabilitiesEvent<BlockEntity> event) {
-        var blockEntity = event.getObject();
-        if (blockEntity instanceof ComputerBlockEntity computer) {
-            CapabilityProvider.attach(event, PERIPHERAL, CAPABILITY_PERIPHERAL, computer::peripheral);
-        } else if (blockEntity instanceof TurtleBlockEntity turtle) {
-            CapabilityProvider.attach(event, INVENTORY, ITEM_HANDLER, () -> new InvWrapper(turtle));
+    public static void onRegisterCapabilities(RegisterCapabilitiesEvent event) {
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.COMPUTER_NORMAL.get(), (b, d) -> b.peripheral());
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.COMPUTER_ADVANCED.get(), (b, d) -> b.peripheral());
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.TURTLE_NORMAL.get(), (b, d) -> b.peripheral());
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.TURTLE_ADVANCED.get(), (b, d) -> b.peripheral());
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.SPEAKER.get(), (b, d) -> b.peripheral());
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.PRINTER.get(), (b, d) -> b.peripheral());
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.DISK_DRIVE.get(), (b, d) -> b.peripheral());
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.MONITOR_NORMAL.get(), (b, d) -> b.peripheral());
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.MONITOR_ADVANCED.get(), (b, d) -> b.peripheral());
 
-            var peripheral = CapabilityProvider.attach(event, PERIPHERAL, CAPABILITY_PERIPHERAL, turtle::peripheral);
-            turtle.onMoved(peripheral::invalidate);
-        } else if (blockEntity instanceof DiskDriveBlockEntity diskDrive) {
-            CapabilityProvider.attach(event, INVENTORY, ITEM_HANDLER, () -> new InvWrapper(diskDrive));
-            CapabilityProvider.attach(event, PERIPHERAL, CAPABILITY_PERIPHERAL, diskDrive::peripheral);
-        } else if (blockEntity instanceof CableBlockEntity cable) {
-            var peripheralHandler = SidedCapabilityProvider.attach(event, PERIPHERAL, Capabilities.CAPABILITY_PERIPHERAL, cable::getPeripheral);
-            var elementHandler = SidedCapabilityProvider.attach(event, WIRED_ELEMENT, Capabilities.CAPABILITY_WIRED_ELEMENT, cable::getWiredElement);
-            cable.onModemChanged(() -> {
-                peripheralHandler.invalidate();
-                elementHandler.invalidate();
-            });
-        } else if (blockEntity instanceof WiredModemFullBlockEntity modem) {
-            SidedCapabilityProvider.attach(event, PERIPHERAL, Capabilities.CAPABILITY_PERIPHERAL, modem::getPeripheral);
-            CapabilityProvider.attach(event, WIRED_ELEMENT, Capabilities.CAPABILITY_WIRED_ELEMENT, modem::getElement);
-        } else if (blockEntity instanceof WirelessModemBlockEntity modem) {
-            var peripheral = SidedCapabilityProvider.attach(event, PERIPHERAL, CAPABILITY_PERIPHERAL, modem::getPeripheral);
-            modem.onModemChanged(peripheral::invalidate);
-        } else if (blockEntity instanceof MonitorBlockEntity monitor) {
-            CapabilityProvider.attach(event, PERIPHERAL, CAPABILITY_PERIPHERAL, monitor::peripheral);
-        } else if (blockEntity instanceof SpeakerBlockEntity speaker) {
-            CapabilityProvider.attach(event, PERIPHERAL, CAPABILITY_PERIPHERAL, speaker::peripheral);
-        } else if (blockEntity instanceof PrinterBlockEntity printer) {
-            CapabilityProvider.attach(event, PERIPHERAL, Capabilities.CAPABILITY_PERIPHERAL, printer::peripheral);
-            // We don't need to invalidate here as the block's can't be rotated on the X axis!
-            SidedCapabilityProvider.attach(
-                event, INVENTORY, ITEM_HANDLER,
-                s -> s == null ? new InvWrapper(printer) : new SidedInvWrapper(printer, s)
-            );
-        } else if (Config.enableCommandBlock && blockEntity instanceof CommandBlockEntity commandBlock) {
-            CapabilityProvider.attach(event, PERIPHERAL, CAPABILITY_PERIPHERAL, () -> new CommandBlockPeripheral(commandBlock));
-        }
+        event.registerBlockEntity(
+            PeripheralCapability.get(), BlockEntityType.COMMAND_BLOCK,
+            (b, d) -> Config.enableCommandBlock ? new CommandBlockPeripheral(b) : null
+        );
+
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.WIRELESS_MODEM_NORMAL.get(), WirelessModemBlockEntity::getPeripheral);
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.WIRELESS_MODEM_ADVANCED.get(), WirelessModemBlockEntity::getPeripheral);
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.WIRED_MODEM_FULL.get(), WiredModemFullBlockEntity::getPeripheral);
+        event.registerBlockEntity(PeripheralCapability.get(), ModRegistry.BlockEntities.CABLE.get(), CableBlockEntity::getPeripheral);
+
+        event.registerBlockEntity(WiredElementCapability.get(), ModRegistry.BlockEntities.WIRED_MODEM_FULL.get(), (b, d) -> b.getElement());
+        event.registerBlockEntity(WiredElementCapability.get(), ModRegistry.BlockEntities.CABLE.get(), CableBlockEntity::getWiredElement);
+        // TODO: turtle.onMoved(peripheral::invalidate);
+        // TODO: cable.onModemChanged(() -> { peripheralHandler.invalidate(); elementHandler.invalidate(); });
+        // TODO: modem.onModemChanged(peripheral::invalidate);
     }
 
     @SubscribeEvent

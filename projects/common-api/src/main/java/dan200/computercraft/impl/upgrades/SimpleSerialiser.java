@@ -21,7 +21,7 @@ import java.util.function.Function;
  * @param <T> The upgrade that this class can serialise and deserialise.
  */
 @ApiStatus.Internal
-public abstract class SimpleSerialiser<T extends UpgradeBase> implements UpgradeSerialiser<T> {
+public class SimpleSerialiser<T extends UpgradeBase> implements UpgradeSerialiser<T> {
     private final Function<ResourceLocation, T> constructor;
 
     public SimpleSerialiser(Function<ResourceLocation, T> constructor) {

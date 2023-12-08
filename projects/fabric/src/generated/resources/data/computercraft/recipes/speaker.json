@@ -7,6 +7,5 @@
     "R": {"tag": "c:redstone_dusts"}
   },
   "pattern": ["###", "#N#", "#R#"],
-  "result": {"item": "computercraft:speaker"},
-  "show_notification": true
+  "result": {"item": "computercraft:speaker"}
 }

@@ -10,7 +10,6 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "requirements": [["has_monitor", "has_the_recipe"]],
-  "rewards": {"recipes": ["computercraft:skull_cloudy"]},
-  "sends_telemetry_event": false
+  "requirements": [["has_the_recipe", "has_monitor"]],
+  "rewards": {"recipes": ["computercraft:skull_cloudy"]}
 }

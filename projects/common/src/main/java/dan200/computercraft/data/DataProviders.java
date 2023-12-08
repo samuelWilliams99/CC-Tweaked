@@ -10,6 +10,7 @@ import net.minecraft.data.PackOutput;
 import net.minecraft.data.loot.LootTableProvider.SubProviderEntry;
 import net.minecraft.data.models.BlockModelGenerators;
 import net.minecraft.data.models.ItemModelGenerators;
+import net.minecraft.data.recipes.RecipeOutput;
 import net.minecraft.data.tags.TagsProvider;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.packs.PackType;
@@ -31,7 +32,7 @@ public final class DataProviders {
     public static void add(GeneratorSink generator) {
         var turtleUpgrades = generator.add(TurtleUpgradeProvider::new);
         var pocketUpgrades = generator.add(PocketUpgradeProvider::new);
-        generator.add(out -> new RecipeProvider(out, turtleUpgrades, pocketUpgrades));
+        generator.recipes(o -> RecipeProvider.recipes(o, turtleUpgrades, pocketUpgrades));
 
         var blockTags = generator.blockTags(TagProvider::blockTags);
         generator.itemTags(TagProvider::itemTags, blockTags);
@@ -58,6 +59,8 @@ public final class DataProviders {
         <T> void addFromCodec(String name, PackType type, String directory, Codec<T> codec, Consumer<BiConsumer<ResourceLocation, T>> output);
 
         void lootTable(List<SubProviderEntry> tables);
+
+        void recipes(Consumer<RecipeOutput> recipes);
 
         TagsProvider<Block> blockTags(Consumer<TagProvider.TagConsumer<Block>> tags);
 

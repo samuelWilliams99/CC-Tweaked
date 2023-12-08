@@ -10,7 +10,7 @@ import dan200.computercraft.api.client.turtle.TurtleUpgradeModeller;
 import dan200.computercraft.api.turtle.ITurtleAccess;
 import dan200.computercraft.api.turtle.ITurtleUpgrade;
 import dan200.computercraft.api.turtle.TurtleSide;
-import dan200.computercraft.api.turtle.TurtleUpgradeSerialiser;
+import dan200.computercraft.api.upgrades.UpgradeSerialiser;
 import dan200.computercraft.impl.TurtleUpgrades;
 import dan200.computercraft.impl.UpgradeManager;
 import net.minecraft.client.Minecraft;
@@ -25,13 +25,13 @@ import java.util.stream.Stream;
 /**
  * A registry of {@link TurtleUpgradeModeller}s.
  *
- * @see dan200.computercraft.api.client.ComputerCraftAPIClient#registerTurtleUpgradeModeller(TurtleUpgradeSerialiser, TurtleUpgradeModeller)
+ * @see dan200.computercraft.api.client.ComputerCraftAPIClient#registerTurtleUpgradeModeller(UpgradeSerialiser, TurtleUpgradeModeller)
  */
 public final class TurtleUpgradeModellers {
     private static final TurtleUpgradeModeller<ITurtleUpgrade> NULL_TURTLE_MODELLER = (upgrade, turtle, side) ->
         new TransformedModel(Minecraft.getInstance().getModelManager().getMissingModel(), Transformation.identity());
 
-    private static final Map<TurtleUpgradeSerialiser<?>, TurtleUpgradeModeller<?>> turtleModels = new ConcurrentHashMap<>();
+    private static final Map<UpgradeSerialiser<? extends ITurtleUpgrade>, TurtleUpgradeModeller<?>> turtleModels = new ConcurrentHashMap<>();
 
     /**
      * In order to avoid a double lookup of {@link ITurtleUpgrade} to {@link UpgradeManager.UpgradeWrapper} to
@@ -44,7 +44,7 @@ public final class TurtleUpgradeModellers {
     private TurtleUpgradeModellers() {
     }
 
-    public static <T extends ITurtleUpgrade> void register(TurtleUpgradeSerialiser<T> serialiser, TurtleUpgradeModeller<T> modeller) {
+    public static <T extends ITurtleUpgrade> void register(UpgradeSerialiser<T> serialiser, TurtleUpgradeModeller<T> modeller) {
         synchronized (turtleModels) {
             if (turtleModels.containsKey(serialiser)) {
                 throw new IllegalStateException("Modeller already registered for serialiser");

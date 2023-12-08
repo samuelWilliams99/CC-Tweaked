@@ -10,7 +10,6 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "requirements": [["has_redstone", "has_the_recipe"]],
-  "rewards": {"recipes": ["computercraft:computer_normal"]},
-  "sends_telemetry_event": false
+  "requirements": [["has_the_recipe", "has_redstone"]],
+  "rewards": {"recipes": ["computercraft:computer_normal"]}
 }

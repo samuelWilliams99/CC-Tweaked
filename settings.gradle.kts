@@ -8,11 +8,14 @@ pluginManagement {
         mavenCentral()
         gradlePluginPortal()
 
-        maven("https://maven.minecraftforge.net") {
-            name = "Forge"
+        maven("https://maven.neoforged.net/releases") {
+            name = "NeoForge"
             content {
                 includeGroup("net.minecraftforge")
-                includeGroup("net.minecraftforge.gradle")
+                includeGroup("net.neoforged")
+                includeGroup("net.neoforged.gradle")
+                includeModule("codechicken", "DiffPatch")
+                includeModule("net.covers1624", "Quack")
             }
         }
 
@@ -27,7 +30,6 @@ pluginManagement {
             name = "Sponge"
             content {
                 includeGroup("org.spongepowered")
-                includeGroup("org.spongepowered.gradle.vanilla")
             }
         }
 

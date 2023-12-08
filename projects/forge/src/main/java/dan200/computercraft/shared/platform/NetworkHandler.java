@@ -17,11 +17,11 @@ import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.chunk.LevelChunk;
 import net.minecraft.world.phys.Vec3;
-import net.minecraftforge.network.NetworkDirection;
-import net.minecraftforge.network.NetworkEvent;
-import net.minecraftforge.network.NetworkRegistry;
-import net.minecraftforge.network.PacketDistributor;
-import net.minecraftforge.network.simple.SimpleChannel;
+import net.neoforged.neoforge.network.NetworkEvent;
+import net.neoforged.neoforge.network.NetworkRegistry;
+import net.neoforged.neoforge.network.PacketDistributor;
+import net.neoforged.neoforge.network.PlayNetworkDirection;
+import net.neoforged.neoforge.network.simple.SimpleChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -52,25 +52,25 @@ public final class NetworkHandler {
             @Override
             public <T extends NetworkMessage<ClientNetworkContext>> void registerClientbound(int id, Class<T> type, Function<FriendlyByteBuf, T> decoder) {
                 if (!usedIds.add(id)) throw new IllegalArgumentException("Already have a packet with id " + id);
-                registerMainThread(id, NetworkDirection.PLAY_TO_CLIENT, type, decoder, x -> ClientNetworkContext.get());
+                registerMainThread(id, PlayNetworkDirection.PLAY_TO_CLIENT, type, decoder, x -> ClientNetworkContext.get());
             }
 
             @Override
             public <T extends NetworkMessage<ServerNetworkContext>> void registerServerbound(int id, Class<T> type, Function<FriendlyByteBuf, T> decoder) {
                 if (!usedIds.add(id)) throw new IllegalArgumentException("Already have a packet with id " + id);
-                registerMainThread(id, NetworkDirection.PLAY_TO_SERVER, type, decoder, c -> () -> assertNonNull(c.getSender()));
+                registerMainThread(id, PlayNetworkDirection.PLAY_TO_SERVER, type, decoder, c -> () -> assertNonNull(c.getSender()));
             }
         });
     }
 
     static void sendToPlayer(NetworkMessage<ClientNetworkContext> packet, ServerPlayer player) {
-        network.sendTo(packet, player.connection.connection, NetworkDirection.PLAY_TO_CLIENT);
+        network.sendTo(packet, player.connection.connection, PlayNetworkDirection.PLAY_TO_CLIENT);
     }
 
     static void sendToPlayers(NetworkMessage<ClientNetworkContext> packet, Collection<ServerPlayer> players) {
         if (players.isEmpty()) return;
 
-        var vanillaPacket = network.toVanillaPacket(packet, NetworkDirection.PLAY_TO_CLIENT);
+        var vanillaPacket = network.toVanillaPacket(packet, PlayNetworkDirection.PLAY_TO_CLIENT);
         for (var player : players) player.connection.send(vanillaPacket);
     }
 
@@ -103,15 +103,15 @@ public final class NetworkHandler {
      * @param handler   Gets or constructs the handler for this packet.
      */
     static <H, T extends NetworkMessage<H>> void registerMainThread(
-        int id, NetworkDirection direction, Class<T> type, Function<FriendlyByteBuf, T> decoder,
+        int id, PlayNetworkDirection direction, Class<T> type, Function<FriendlyByteBuf, T> decoder,
         Function<NetworkEvent.Context, H> handler
     ) {
         network.messageBuilder(type, id, direction)
             .encoder(NetworkMessage::toBytes)
-            .decoder(decoder)
+            .decoder(decoder::apply)
             .consumerMainThread((packet, contextSup) -> {
                 try {
-                    packet.handle(handler.apply(contextSup.get()));
+                    packet.handle(handler.apply(contextSup));
                 } catch (RuntimeException | Error e) {
                     LOG.error("Failed handling packet", e);
                     throw e;

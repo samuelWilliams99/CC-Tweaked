@@ -4,23 +4,27 @@
 
 package dan200.computercraft.gametest.api
 
+import dan200.computercraft.api.peripheral.IPeripheral
 import dan200.computercraft.gametest.core.ManagedComputers
+import dan200.computercraft.impl.RegistryHelper
 import dan200.computercraft.mixin.gametest.GameTestHelperAccessor
 import dan200.computercraft.mixin.gametest.GameTestInfoAccessor
 import dan200.computercraft.mixin.gametest.GameTestSequenceAccessor
 import dan200.computercraft.shared.platform.PlatformHelper
-import dan200.computercraft.shared.platform.RegistryWrappers
 import dan200.computercraft.test.core.computer.LuaTaskContext
 import dan200.computercraft.test.shared.ItemStackMatcher.isStack
 import net.minecraft.commands.arguments.blocks.BlockInput
 import net.minecraft.core.BlockPos
 import net.minecraft.core.Direction
+import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.gametest.framework.*
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.world.Container
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.level.block.Blocks
+import net.minecraft.world.level.block.entity.BarrelBlockEntity
 import net.minecraft.world.level.block.entity.BlockEntity
 import net.minecraft.world.level.block.entity.BlockEntityType
 import net.minecraft.world.level.block.state.BlockState
@@ -158,7 +162,7 @@ fun GameTestHelper.assertBlockIs(pos: BlockPos, predicate: (BlockState) -> Boole
 fun <T : Comparable<T>> GameTestHelper.assertBlockHas(pos: BlockPos, property: Property<T>, value: T, message: String = "") {
     val state = getBlockState(pos)
     if (!state.hasProperty(property)) {
-        val id = RegistryWrappers.BLOCKS.getKey(state.block)
+        val id = RegistryHelper.getKeyOrThrow(BuiltInRegistries.BLOCK, state.block)
         fail(message, "block $id does not have property ${property.name}", pos)
     } else if (state.getValue(property) != value) {
         fail(message, "${property.name} is ${state.getValue(property)}, expected $value", pos)
@@ -206,9 +210,17 @@ private fun GameTestHelper.assertContainerExactlyImpl(pos: BlockPos, container: 
     }
 }
 
+/**
+ * A nasty hack to get a peripheral at a given position, by creating a dummy [BlockEntity].
+ */
+private fun GameTestHelper.getPeripheralAt(pos: BlockPos, direction: Direction): IPeripheral? {
+    val be = BarrelBlockEntity(absolutePos(pos).relative(direction), Blocks.BARREL.defaultBlockState())
+    be.setLevel(level)
+    return PlatformHelper.get().createPeripheralAccess(be) { }.get(direction.opposite)
+}
+
 fun GameTestHelper.assertPeripheral(pos: BlockPos, direction: Direction = Direction.UP, type: String) {
-    val peripheral = PlatformHelper.get().createPeripheralAccess { }
-        .get(level, absolutePos(pos).relative(direction), direction.opposite)
+    val peripheral = getPeripheralAt(pos, direction)
     when {
         peripheral == null -> fail("No peripheral at position", pos)
         peripheral.type != type -> fail("Peripheral is of type ${peripheral.type}, expected $type", pos)
@@ -216,8 +228,7 @@ fun GameTestHelper.assertPeripheral(pos: BlockPos, direction: Direction = Direct
 }
 
 fun GameTestHelper.assertNoPeripheral(pos: BlockPos, direction: Direction = Direction.UP) {
-    val peripheral = PlatformHelper.get().createPeripheralAccess { }
-        .get(level, absolutePos(pos).relative(direction), direction.opposite)
+    val peripheral = getPeripheralAt(pos, direction)
     if (peripheral != null) fail("Expected no peripheral, got a ${peripheral.type}", pos)
 }
 
@@ -231,7 +242,8 @@ fun GameTestHelper.assertExactlyItems(vararg expected: ItemStack, message: Strin
     }
 }
 
-private fun getName(type: BlockEntityType<*>): ResourceLocation = RegistryWrappers.BLOCK_ENTITY_TYPES.getKey(type)!!
+private fun getName(type: BlockEntityType<*>): ResourceLocation =
+    RegistryHelper.getKeyOrThrow(BuiltInRegistries.BLOCK_ENTITY_TYPE, type)
 
 /**
  * Get a [BlockEntity] of a specific type.

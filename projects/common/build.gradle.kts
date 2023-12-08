@@ -2,7 +2,10 @@
 //
 // SPDX-License-Identifier: MPL-2.0
 
-import cc.tweaked.gradle.*
+import cc.tweaked.gradle.IlluaminateExec
+import cc.tweaked.gradle.annotationProcessorEverywhere
+import cc.tweaked.gradle.clientClasses
+import cc.tweaked.gradle.commonClasses
 
 plugins {
     id("cc-tweaked.vanilla")
@@ -12,10 +15,9 @@ plugins {
 }
 
 minecraft {
-    accessWideners(
-        "src/main/resources/computercraft.accesswidener",
-        "src/main/resources/computercraft-common.accesswidener",
-    )
+    accessTransformers {
+        file("src/main/resources/accesstransformer-common.cfg")
+    }
 }
 
 configurations {

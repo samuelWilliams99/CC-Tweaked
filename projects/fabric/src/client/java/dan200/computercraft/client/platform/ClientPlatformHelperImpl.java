@@ -11,6 +11,7 @@ import dan200.computercraft.client.render.ModelRenderer;
 import dan200.computercraft.shared.network.NetworkMessage;
 import dan200.computercraft.shared.network.server.ServerNetworkContext;
 import dan200.computercraft.shared.platform.NetworkHandler;
+import net.fabricmc.fabric.api.client.networking.v1.ClientPlayNetworking;
 import net.fabricmc.fabric.api.renderer.v1.model.ModelHelper;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.renderer.MultiBufferSource;
@@ -29,7 +30,7 @@ public class ClientPlatformHelperImpl implements ClientPlatformHelper {
 
     @Override
     public void sendToServer(NetworkMessage<ServerNetworkContext> message) {
-        Minecraft.getInstance().player.connection.send(NetworkHandler.encodeServer(message));
+        Minecraft.getInstance().player.connection.send(ClientPlayNetworking.createC2SPacket(NetworkHandler.ID, NetworkHandler.encodeServer(message)));
     }
 
     @Override

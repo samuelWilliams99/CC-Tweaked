@@ -4,7 +4,6 @@
 
 package cc.tweaked.gradle
 
-import net.minecraftforge.gradle.common.util.RunConfig
 import org.gradle.api.GradleException
 import org.gradle.api.file.FileSystemOperations
 import org.gradle.api.invocation.Gradle
@@ -65,13 +64,13 @@ abstract class ClientJavaExec : JavaExec() {
         setTestProperties()
     }
 
-    /**
-     * Set this task to run a given [RunConfig].
-     */
-    fun setRunConfig(config: RunConfig) {
-        (this as JavaExec).setRunConfig(config)
-        setTestProperties() // setRunConfig may clobber some properties, ensure everything is set.
-    }
+    // /**
+    //  * Set this task to run a given [RunConfig].
+    //  */
+    // fun setRunConfig(config: RunConfig) {
+    //     (this as JavaExec).setRunConfig(config)
+    //     setTestProperties() // setRunConfig may clobber some properties, ensure everything is set.
+    // }
 
     /**
      * Copy configuration from a task with the given name.

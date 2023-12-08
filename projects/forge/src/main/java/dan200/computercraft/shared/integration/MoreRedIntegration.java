@@ -4,24 +4,15 @@
 
 package dan200.computercraft.shared.integration;
 
-import commoble.morered.api.MoreRedAPI;
 import dan200.computercraft.api.ComputerCraftAPI;
-import dan200.computercraft.shared.common.IBundledRedstoneBlock;
-import dan200.computercraft.shared.util.SidedCapabilityProvider;
-import net.minecraft.core.BlockPos;
-import net.minecraft.core.Direction;
 import net.minecraft.resources.ResourceLocation;
-import net.minecraft.world.level.Level;
-import net.minecraft.world.level.block.entity.BlockEntity;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.AttachCapabilitiesEvent;
-import net.minecraftforge.eventbus.api.SubscribeEvent;
 
 public class MoreRedIntegration {
     public static final String MOD_ID = "morered";
 
     private static final ResourceLocation ID = new ResourceLocation(ComputerCraftAPI.MOD_ID, MOD_ID);
 
+    /*
     @SubscribeEvent
     public static void attachBlockCapabilities(AttachCapabilitiesEvent<BlockEntity> event) {
         var blockEntity = event.getObject();
@@ -38,12 +29,14 @@ public class MoreRedIntegration {
             });
         }
     }
+    */
 
     public static void setup() {
-        MinecraftForge.EVENT_BUS.register(MoreRedIntegration.class);
-        ComputerCraftAPI.registerBundledRedstoneProvider(MoreRedIntegration::getBundledPower);
+        // NeoForge.EVENT_BUS.register(MoreRedIntegration.class);
+        // ComputerCraftAPI.registerBundledRedstoneProvider(MoreRedIntegration::getBundledPower);
     }
 
+    /*
     private static int getBundledPower(Level world, BlockPos pos, Direction side) {
         var blockEntity = world.getBlockEntity(pos);
         if (blockEntity == null) return -1;
@@ -63,4 +56,5 @@ public class MoreRedIntegration {
         }
         return mask;
     }
+    */
 }

@@ -16,8 +16,8 @@ import it.unimi.dsi.fastutil.objects.Object2IntMap;
 import it.unimi.dsi.fastutil.objects.Object2IntOpenHashMap;
 import net.fabricmc.fabric.api.networking.v1.ServerPlayNetworking;
 import net.minecraft.network.FriendlyByteBuf;
-import net.minecraft.network.protocol.game.ClientboundCustomPayloadPacket;
-import net.minecraft.network.protocol.game.ServerboundCustomPayloadPacket;
+import net.minecraft.network.protocol.Packet;
+import net.minecraft.network.protocol.common.ClientCommonPacketListener;
 import net.minecraft.resources.ResourceLocation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,12 +62,13 @@ public final class NetworkHandler {
         return buf;
     }
 
-    public static ClientboundCustomPayloadPacket encodeClient(NetworkMessage<ClientNetworkContext> message) {
-        return new ClientboundCustomPayloadPacket(ID, encode(message));
+    public static Packet<ClientCommonPacketListener> encodeClient(NetworkMessage<ClientNetworkContext> message) {
+        // TODO: Not this!
+        return ServerPlayNetworking.createS2CPacket(ID, encode(message));
     }
 
-    public static ServerboundCustomPayloadPacket encodeServer(NetworkMessage<ServerNetworkContext> message) {
-        return new ServerboundCustomPayloadPacket(ID, encode(message));
+    public static FriendlyByteBuf encodeServer(NetworkMessage<ServerNetworkContext> message) {
+        return encode(message);
     }
 
     @Nullable

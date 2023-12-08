@@ -8,6 +8,5 @@
     "C": {"item": "computercraft:turtle_normal"}
   },
   "pattern": ["###", "#C#", " B "],
-  "result": {"item": "computercraft:turtle_advanced"},
-  "show_notification": true
+  "result": {"item": "computercraft:turtle_advanced"}
 }

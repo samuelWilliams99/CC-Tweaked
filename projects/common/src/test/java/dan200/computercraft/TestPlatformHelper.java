@@ -21,10 +21,8 @@ import net.minecraft.commands.synchronization.ArgumentTypeInfo;
 import net.minecraft.core.BlockPos;
 import net.minecraft.core.Direction;
 import net.minecraft.core.Registry;
-import net.minecraft.core.registries.BuiltInRegistries;
 import net.minecraft.network.FriendlyByteBuf;
 import net.minecraft.resources.ResourceKey;
-import net.minecraft.resources.ResourceLocation;
 import net.minecraft.server.MinecraftServer;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -52,7 +50,6 @@ import net.minecraft.world.phys.Vec3;
 
 import javax.annotation.Nullable;
 import java.util.Collection;
-import java.util.Iterator;
 import java.util.List;
 import java.util.function.BiFunction;
 import java.util.function.Consumer;
@@ -74,38 +71,6 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     @Override
     public <T> RegistrationHelper<T> createRegistrationHelper(ResourceKey<Registry<T>> registry) {
         throw new UnsupportedOperationException("Cannot query registry inside tests");
-    }
-
-    @SuppressWarnings("unchecked")
-    private static <T> Registry<T> getRegistry(ResourceKey<Registry<T>> id) {
-        var registry = (Registry<T>) BuiltInRegistries.REGISTRY.get(id.location());
-        if (registry == null) throw new IllegalArgumentException("Unknown registry " + id);
-        return registry;
-    }
-
-    @Override
-    public <T> ResourceLocation getRegistryKey(ResourceKey<Registry<T>> registry, T object) {
-        var key = getRegistry(registry).getKey(object);
-        if (key == null) throw new IllegalArgumentException(object + " was not registered in " + registry);
-        return key;
-    }
-
-    @Override
-    public <T> T getRegistryObject(ResourceKey<Registry<T>> registry, ResourceLocation id) {
-        var value = getRegistry(registry).get(id);
-        if (value == null) throw new IllegalArgumentException(id + " was not registered in " + registry);
-        return value;
-    }
-
-    @Override
-    public <T> RegistryWrappers.RegistryWrapper<T> wrap(ResourceKey<Registry<T>> registry) {
-        return new RegistryWrapperImpl<>(registry.location(), getRegistry(registry));
-    }
-
-    @Nullable
-    @Override
-    public <T> T tryGetRegistryObject(ResourceKey<Registry<T>> registry, ResourceLocation id) {
-        return getRegistry(registry).get(id);
     }
 
     @Override
@@ -169,12 +134,12 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     }
 
     @Override
-    public ComponentAccess<IPeripheral> createPeripheralAccess(Consumer<Direction> invalidate) {
+    public ComponentAccess<IPeripheral> createPeripheralAccess(BlockEntity blockEntity, Consumer<Direction> invalidate) {
         throw new UnsupportedOperationException("Cannot interact with the world inside tests");
     }
 
     @Override
-    public ComponentAccess<WiredElement> createWiredElementAccess(Consumer<Direction> invalidate) {
+    public ComponentAccess<WiredElement> createWiredElementAccess(BlockEntity blockEntity, Consumer<Direction> invalidate) {
         throw new UnsupportedOperationException("Cannot interact with the world inside tests");
     }
 
@@ -257,49 +222,5 @@ public class TestPlatformHelper extends AbstractComputerCraftAPI implements Plat
     @Override
     public String getInstalledVersion() {
         return "1.0";
-    }
-
-    private record RegistryWrapperImpl<T>(
-        ResourceLocation name, Registry<T> registry
-    ) implements RegistryWrappers.RegistryWrapper<T> {
-        @Override
-        public int getId(T object) {
-            return registry.getId(object);
-        }
-
-        @Override
-        public ResourceLocation getKey(T object) {
-            var key = registry.getKey(object);
-            if (key == null) throw new IllegalArgumentException(object + " was not registered in " + name);
-            return key;
-        }
-
-        @Override
-        public T get(ResourceLocation location) {
-            var object = registry.get(location);
-            if (object == null) throw new IllegalArgumentException(location + " was not registered in " + name);
-            return object;
-        }
-
-        @Nullable
-        @Override
-        public T tryGet(ResourceLocation location) {
-            return registry.get(location);
-        }
-
-        @Override
-        public @Nullable T byId(int id) {
-            return registry.byId(id);
-        }
-
-        @Override
-        public int size() {
-            return registry.size();
-        }
-
-        @Override
-        public Iterator<T> iterator() {
-            return registry.iterator();
-        }
     }
 }

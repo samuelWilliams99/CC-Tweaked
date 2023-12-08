@@ -10,7 +10,7 @@ import cc.tweaked.gradle.MinecraftConfigurations
 
 plugins {
     id("cc-tweaked.java-convention")
-    id("org.spongepowered.gradle.vanilla")
+    id("net.neoforged.gradle.vanilla")
 }
 
 plugins.apply(CCTweakedPlugin::class.java)
@@ -18,10 +18,12 @@ plugins.apply(CCTweakedPlugin::class.java)
 val mcVersion: String by extra
 
 minecraft {
-    version(mcVersion)
+    modIdentifier("computercraft")
 }
 
 dependencies {
+    implementation("net.minecraft:client:$mcVersion")
+
     val libs = project.extensions.getByType<VersionCatalogsExtension>().named("libs")
 
     // Depend on error prone annotations to silence a lot of compile warnings.

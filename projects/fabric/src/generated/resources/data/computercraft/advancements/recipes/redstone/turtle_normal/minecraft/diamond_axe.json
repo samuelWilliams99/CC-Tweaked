@@ -12,7 +12,6 @@
       "trigger": "minecraft:recipe_unlocked"
     }
   },
-  "requirements": [["has_items", "has_the_recipe"]],
-  "rewards": {"recipes": ["computercraft:turtle_normal/minecraft/diamond_axe"]},
-  "sends_telemetry_event": false
+  "requirements": [["has_the_recipe", "has_items"]],
+  "rewards": {"recipes": ["computercraft:turtle_normal/minecraft/diamond_axe"]}
 }
